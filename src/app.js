@@ -15,10 +15,13 @@ const defaultDevelopmentOrigins = [
   "http://localhost:5173",
   "http://127.0.0.1:5173",
   "http://localhost:3000",
-  "http://127.0.0.1:3000"
+  "http://127.0.0.1:3000",
 ];
 const configuredOrigins = env.clientUrls
-  ? env.clientUrls.split(",").map((origin) => origin.trim()).filter(Boolean)
+  ? env.clientUrls
+      .split(",")
+      .map((origin) => origin.trim())
+      .filter(Boolean)
   : [];
 const allowedOrigins =
   env.nodeEnv === "production"
@@ -40,10 +43,10 @@ app.use(
         return callback(null, true);
       }
 
-      return callback(new Error("Not allowed by CORS"));
+      return callback(new Error(`CORS blocked origin: ${origin}`));
     },
-    credentials: true
-  })
+    credentials: true,
+  }),
 );
 app.use(cookieParser());
 app.use(express.json());
