@@ -3,8 +3,11 @@ const {
   getRequests,
   updateRequestStatus
 } = require("../controllers/requestController");
+const authenticate = require("../middlewares/authenticate");
 
 const router = express.Router();
+
+router.use(authenticate);
 
 router.get("/", getRequests);
 router.put("/:id", updateRequestStatus);

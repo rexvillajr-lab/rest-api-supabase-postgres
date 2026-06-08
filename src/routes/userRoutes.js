@@ -3,7 +3,10 @@ const userController = require("../controllers/userController");
 const {
   createUserVerificationRequest
 } = require("../controllers/requestController");
+const authenticate = require("../middlewares/authenticate");
 const uploadRequestImages = require("../middlewares/uploadRequestImages");
+
+router.use(authenticate);
 
 router.post("/", userController.create);
 router.get("/", userController.findAll);

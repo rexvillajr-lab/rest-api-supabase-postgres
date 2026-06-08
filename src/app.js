@@ -6,13 +6,36 @@ const morgan = require("morgan");
 const path = require("path");
 
 const routes = require("./routes");
+const env = require("./config/env");
 const errorHandler = require("./middlewares/errorHandler");
 const notFoundHandler = require("./middlewares/notFoundHandler");
 
 const app = express();
+const defaultDevelopmentOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "http://localhost:3000",
+  "http://127.0.0.1:3000"
+];
+const configuredOrigins = env.clientUrls
+  ? env.clientUrls.split(",").map((origin) => origin.trim()).filter(Boolean)
+  : [];
+const allowedOrigins =
+  env.nodeEnv === "production" ? configuredOrigins : configuredOrigins.concat(defaultDevelopmentOrigins);
 
 app.use(helmet());
-app.use(cors());
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true
+  })
+);
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
