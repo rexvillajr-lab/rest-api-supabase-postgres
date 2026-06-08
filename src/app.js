@@ -21,13 +21,22 @@ const configuredOrigins = env.clientUrls
   ? env.clientUrls.split(",").map((origin) => origin.trim()).filter(Boolean)
   : [];
 const allowedOrigins =
-  env.nodeEnv === "production" ? configuredOrigins : configuredOrigins.concat(defaultDevelopmentOrigins);
+  env.nodeEnv === "production"
+    ? configuredOrigins
+    : configuredOrigins.concat(defaultDevelopmentOrigins);
+const isOriginAllowed = (origin) => {
+  if (!origin || env.nodeEnv !== "production") {
+    return true;
+  }
+
+  return allowedOrigins.includes(origin);
+};
 
 app.use(helmet());
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (isOriginAllowed(origin)) {
         return callback(null, true);
       }
 
