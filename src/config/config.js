@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const sslOptions = {
   require: true,
-  rejectUnauthorized: false
+  rejectUnauthorized: false,
 };
 
 module.exports = {
@@ -10,20 +10,20 @@ module.exports = {
     url: process.env.DATABASE_URL,
     dialect: "postgres",
     dialectOptions: {
-      ssl: sslOptions
-    }
+      ssl: sslOptions,
+    },
   },
   test: {
     url: process.env.DATABASE_URL,
     dialect: "postgres",
-    logging: false
+    logging: false,
   },
   production: {
     url: process.env.DATABASE_URL,
     dialect: "postgres",
     dialectOptions: {
-      ssl: sslOptions
+      ssl: sslOptions,
     },
-    logging: false
-  }
+    logging: false,
+  },
 };

@@ -3,7 +3,7 @@ const env = require("../config/env");
 
 const sequelize = new Sequelize(env.databaseUrl, {
   dialect: "postgres",
-  logging: env.nodeEnv === "development" ? console.log : false,
+  logging: false,
   dialectOptions: {
     ssl:
       env.nodeEnv === "production" || env.nodeEnv === "development"
