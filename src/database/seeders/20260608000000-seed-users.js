@@ -16,6 +16,7 @@ module.exports = {
         email: "admin@park.local",
         password: await hashPassword("admin123"),
         is_verified: true,
+        provider_status: false,
         created_at: now,
         updated_at: now
       },
@@ -28,6 +29,7 @@ module.exports = {
         email: "provider@park.local",
         password: await hashPassword("provider123"),
         is_verified: true,
+        provider_status: true,
         created_at: now,
         updated_at: now
       },
@@ -40,6 +42,7 @@ module.exports = {
         email: "user@park.local",
         password: await hashPassword("user123"),
         is_verified: false,
+        provider_status: false,
         created_at: now,
         updated_at: now
       }

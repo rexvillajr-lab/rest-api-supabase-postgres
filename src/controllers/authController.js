@@ -60,6 +60,7 @@ const register = async (req, res) => {
       password: await hashPassword(password),
       user_type_id: 3,
       is_verified: false,
+      provider_status: false,
     });
 
     return res.status(201).json({

@@ -13,6 +13,10 @@ const createUser = async (payload) => {
     userPayload.user_type_id = 3;
   }
 
+  if (userPayload.provider_status === undefined) {
+    userPayload.provider_status = userPayload.user_type_id === 2;
+  }
+
   return userRepository.create(userPayload);
 };
 
@@ -35,6 +39,13 @@ const updateUser = async (id, payload) => {
 
   if (userPayload.password) {
     userPayload.password = await hashPassword(userPayload.password);
+  }
+
+  if (
+    userPayload.provider_status === undefined &&
+    userPayload.user_type_id === 2
+  ) {
+    userPayload.provider_status = true;
   }
 
   const user = await userRepository.updateById(id, userPayload);

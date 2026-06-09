@@ -5,6 +5,12 @@ const REQUEST_TYPES = {
   userVerification: "user_verification"
 };
 
+const REQUEST_STATUSES = {
+  pending: 1,
+  approved: 2,
+  rejected: 3
+};
+
 const getRequests = async (_req, res, next) => {
   try {
     const requests = await Request.findAll({
@@ -42,6 +48,10 @@ const createProviderRequest = async (req, res, next) => {
       });
     }
 
+    if (user.provider_status) {
+      return res.status(400).json({ error: "User is already a provider" });
+    }
+
     if (!user.is_verified) {
       return res.status(400).json({
         error: "Only verified accounts can request as provider"
@@ -57,7 +67,7 @@ const createProviderRequest = async (req, res, next) => {
     const existingPendingRequest = await Request.findOne({
       where: {
         user_id: userId,
-        status: 1,
+        status: REQUEST_STATUSES.pending,
         request_type: REQUEST_TYPES.provider
       }
     });
@@ -70,7 +80,7 @@ const createProviderRequest = async (req, res, next) => {
 
     const request = await Request.create({
       user_id: userId,
-      status: 1,
+      status: REQUEST_STATUSES.pending,
       request_type: REQUEST_TYPES.provider,
       location,
       img_path: imagePath
@@ -112,7 +122,7 @@ const createUserVerificationRequest = async (req, res, next) => {
     const existingPendingRequest = await Request.findOne({
       where: {
         user_id: userId,
-        status: 1,
+        status: REQUEST_STATUSES.pending,
         request_type: REQUEST_TYPES.userVerification
       }
     });
@@ -125,7 +135,7 @@ const createUserVerificationRequest = async (req, res, next) => {
 
     const request = await Request.create({
       user_id: userId,
-      status: 1,
+      status: REQUEST_STATUSES.pending,
       request_type: REQUEST_TYPES.userVerification,
       location,
       front_img_path: frontImagePath,
@@ -152,14 +162,26 @@ const updateRequestStatus = async (req, res, next) => {
     request.status = status;
     await request.save();
 
-    if (Number(status) === 2) {
-      if (request.request_type === REQUEST_TYPES.provider) {
-        await User.update({ user_type_id: 2 }, { where: { id: request.user_id } });
-      }
+    if (request.request_type === REQUEST_TYPES.provider) {
+      const providerStatus = Number(status) === REQUEST_STATUSES.approved;
 
-      if (request.request_type === REQUEST_TYPES.userVerification) {
-        await User.update({ is_verified: true }, { where: { id: request.user_id } });
-      }
+      await User.update(
+        {
+          provider_status: providerStatus,
+          ...(providerStatus ? { user_type_id: 2 } : {})
+        },
+        { where: { id: request.user_id } }
+      );
+    }
+
+    if (
+      Number(status) === REQUEST_STATUSES.approved &&
+      request.request_type === REQUEST_TYPES.userVerification
+    ) {
+      await User.update(
+        { is_verified: true },
+        { where: { id: request.user_id } }
+      );
     }
 
     return res.json({ message: "Updated successfully" });
@@ -173,5 +195,6 @@ module.exports = {
   createProviderRequest,
   createUserVerificationRequest,
   updateRequestStatus,
-  REQUEST_TYPES
+  REQUEST_TYPES,
+  REQUEST_STATUSES
 };

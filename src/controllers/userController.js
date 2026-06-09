@@ -4,6 +4,7 @@ const { createProviderRequest } = require("./requestController");
 const create = async (req, res, next) => {
   try {
     const user = await userService.createUser(req.body);
+
     res.status(201).json(user);
   } catch (error) {
     next(error);
@@ -57,5 +58,5 @@ module.exports = {
   getUserById: findOne,
   updateUser: update,
   deleteUser: remove,
-  createProviderRequest
+  createProviderRequest,
 };
