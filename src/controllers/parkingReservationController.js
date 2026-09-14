@@ -18,19 +18,68 @@ const getParkingReservations = async (req, res, next) => {
             "location",
             "latitude",
             "longitude",
-            "price_per_hour"
-          ]
+            "price_per_hour",
+          ],
         },
         {
           model: User,
           as: "user",
-          attributes: ["id", "first_name", "last_name", "email"]
-        }
+          attributes: ["id", "first_name", "last_name", "email"],
+        },
       ],
-      order: [["createdAt", "DESC"]]
+      order: [["createdAt", "DESC"]],
     });
 
     return res.json(reservations);
+  } catch (error) {
+    return next(error);
+  }
+};
+
+const searchParkingReservationByPlateNumber = async (req, res, next) => {
+  const { parking_space_id, plate_number } = req.query;
+
+  try {
+    if (!parking_space_id) {
+      return res.status(400).json({ error: "Parking space ID is required" });
+    }
+
+    if (!plate_number?.trim()) {
+      return res.status(400).json({ error: "Plate number is required" });
+    }
+
+    const reservation = await ParkingReservation.findOne({
+      where: {
+        parking_space_id,
+        plate_number: plate_number.trim(),
+      },
+      include: [
+        {
+          model: ParkingSpace,
+          as: "parking_space",
+          attributes: [
+            "id",
+            "space_name",
+            "location",
+            "latitude",
+            "longitude",
+            "price_per_hour",
+          ],
+        },
+        {
+          model: User,
+          as: "user",
+          attributes: ["id", "first_name", "last_name", "email"],
+        },
+      ],
+      order: [["createdAt", "DESC"]],
+    });
+
+    if (!reservation) {
+      return res.status(404).json({ error: "Parking reservation not found" });
+    }
+
+    return res.json(reservation);
   } catch (error) {
     return next(error);
   }
@@ -43,7 +92,7 @@ const createParkingReservation = async (req, res, next) => {
     payment_mode,
     plate_number,
     parking_time,
-    duration_hours
+    duration_hours,
   } = req.body;
 
   try {
@@ -71,14 +120,14 @@ const createParkingReservation = async (req, res, next) => {
       parking_space_id,
       user_id,
       payment_mode,
-      plate_number: plate_number.trim(),
+      plate_number: plate_number.trim().toUpperCase(),
       parking_time,
       duration_hours,
-      status: "booked"
+      status: "booked",
     });
 
     await parkingSpace.update({
-      slots_available: Number(parkingSpace.slots_available) - 1
+      slots_available: Number(parkingSpace.slots_available) - 1,
     });
 
     return res.status(201).json(reservation);
@@ -89,5 +138,6 @@ const createParkingReservation = async (req, res, next) => {
 
 module.exports = {
   getParkingReservations,
-  createParkingReservation
+  searchParkingReservationByPlateNumber,
+  createParkingReservation,
 };
