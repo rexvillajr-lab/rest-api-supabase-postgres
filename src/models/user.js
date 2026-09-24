@@ -8,61 +8,66 @@ const User = sequelize.define(
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       primaryKey: true,
-      allowNull: false
+      allowNull: false,
     },
     first_name: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     last_name: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     phone_number: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     user_type_id: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
     },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
       validate: {
-        isEmail: true
-      }
+        isEmail: true,
+      },
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     is_verified: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false
+      defaultValue: false,
     },
     provider_status: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false
-    }
+      defaultValue: false,
+    },
+    status: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
   },
   {
     tableName: "users",
     underscored: true,
     defaultScope: {
       attributes: {
-        exclude: ["password"]
-      }
+        exclude: ["password"],
+      },
     },
     scopes: {
       withPassword: {
-        attributes: {}
-      }
-    }
-  }
+        attributes: {},
+      },
+    },
+  },
 );
 
 module.exports = User;
