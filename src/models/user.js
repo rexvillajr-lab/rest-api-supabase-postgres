@@ -36,7 +36,7 @@ const User = sequelize.define(
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false,
+      allowNull: true,
     },
     is_verified: {
       type: DataTypes.BOOLEAN,
@@ -52,6 +52,10 @@ const User = sequelize.define(
       type: DataTypes.BOOLEAN,
       allowNull: false,
       defaultValue: false,
+    },
+    google_id: {
+      type: DataTypes.STRING,
+      allowNull: true,
     },
   },
   {
