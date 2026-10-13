@@ -183,7 +183,12 @@ const loginwithgoogle = async (req, res) => {
       user: sanitizeUser(user),
     });
   } catch (error) {
-    console.error("Google authentication failed:", error.message);
+    console.error("Google authentication failed:", {
+      message: error.message,
+      code: error.code,
+      response: error.response?.data,
+      status: error.response?.status,
+    });
 
     return res.status(401).json({
       message: "Google authentication failed",
