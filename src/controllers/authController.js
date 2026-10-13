@@ -126,7 +126,8 @@ const loginwithgoogle = async (req, res) => {
 
     const googleId = profile.sub;
     const email = profile.email;
-    const name = profile.name || "";
+    const first_name = profile.given_name || "";
+    const last_name = profile.family_name || "";
 
     // 4. First, look for an account already linked to this Google ID.
     let user = await User.findOne({
@@ -161,8 +162,8 @@ const loginwithgoogle = async (req, res) => {
       } else {
         // 6. Create a new Google user.
         user = await User.create({
-          first_name: name,
-          last_name: "",
+          first_name: first_name,
+          last_name: last_name,
           phone_number: "",
           email,
           password: null,
